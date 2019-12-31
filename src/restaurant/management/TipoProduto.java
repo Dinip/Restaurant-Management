@@ -9,13 +9,8 @@ package restaurant.management;
  *
  * @author Dinis Pimpão e Gonçalo Gouveia
  */
-public class RestaurantManagement {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
-    
+public enum TipoProduto {
+    Refeiçao,
+    Bebida,
+    Sobremesa;
 }
