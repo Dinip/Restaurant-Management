@@ -12,9 +12,16 @@ import java.util.ArrayList;
  * @author Dinis Pimpão e Gonçalo Gouveia
  */
 public class Menu {
+
     private String nome;
     private double price;
     private ArrayList<Produto> produto;
+
+    public Menu(String nome, double price, ArrayList<Produto> produto) {
+        this.nome = nome;
+        this.price = price;
+        this.produto = produto;
+    }
 
     public String getNome() {
         return nome;
