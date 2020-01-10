@@ -16,7 +16,12 @@ public class Produto {
     private String description;
     private double price;
     private int stock;
+    
+    //Construtor vazio
+    public Produto(){  
+    };
 
+    //Contrutor com atributos
     public Produto(String nome, TipoProduto tipoProduto, String description, double price, int stock) {
         this.nome = nome;
         this.tipoProduto = tipoProduto;
