@@ -11,23 +11,33 @@ package restaurant.management;
  */
 public class Produto {
 
+    private int codigo;
     private String nome;
     private TipoProduto tipoProduto;
-    private String description;
-    private double price;
+    private String descrição;
+    private double preço;
     private int stock;
-    
+
     //Construtor vazio
-    public Produto(){  
-    };
+    public Produto() {
+    }
 
     //Contrutor com atributos
-    public Produto(String nome, TipoProduto tipoProduto, String description, double price, int stock) {
+    public Produto(int codigo, String nome, TipoProduto tipoProduto, String description, double price, int stock) {
+        this.codigo = codigo;
         this.nome = nome;
         this.tipoProduto = tipoProduto;
-        this.description = description;
-        this.price = price;
+        this.descrição = description;
+        this.preço = price;
         this.stock = stock;
+    }
+
+    public int getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(int codigo) {
+        this.codigo = codigo;
     }
 
     public String getNome() {
@@ -46,20 +56,20 @@ public class Produto {
         this.tipoProduto = tipoProduto;
     }
 
-    public String getDescription() {
-        return description;
+    public String getDescrição() {
+        return descrição;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescrição(String descrição) {
+        this.descrição = descrição;
     }
 
-    public double getPrice() {
-        return price;
+    public double getPreço() {
+        return preço;
     }
 
-    public void setPrice(double price) {
-        this.price = price;
+    public void setPreço(double preço) {
+        this.preço = preço;
     }
 
     public int getStock() {
@@ -68,6 +78,16 @@ public class Produto {
 
     public void setStock(int stock) {
         this.stock = stock;
+    }
+
+    public String getAllInfo() {
+        return "-------------------------------" + "\n"
+                + "Codigo: " + this.codigo + "\n"
+                + "Nome: " + this.nome + "\n"
+                + "Preço: " + this.preço + "\n"
+                + "Descrição: " + this.descrição + "\n"
+                + "Stock: " + this.stock + "\n"
+                + "Tipo de produto: " + this.tipoProduto;
     }
 
 }

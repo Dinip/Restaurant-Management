@@ -13,7 +13,7 @@ public class Pessoa {
 
     private int codigo;
     private String nome;
-    private double contribuinte;
+    private String contribuinte;
     private String username;
     private String password;
     private double salarioBruto;
@@ -24,7 +24,7 @@ public class Pessoa {
     }
 
     //Contrutor para cliente
-    public Pessoa(int codigo, String nome, double contribuinte, TipoPessoa tipoPessoa) {
+    public Pessoa(int codigo, String nome, String contribuinte, TipoPessoa tipoPessoa) {
         this.codigo = codigo;
         this.nome = nome;
         this.contribuinte = contribuinte;
@@ -39,7 +39,7 @@ public class Pessoa {
     }
 
     //Contrutor para funcionarios
-    public Pessoa(int codigo, String nome, double contribuinte, String username, String password, double salarioBruto, boolean isAdmin, TipoPessoa tipoPessoa) {
+    public Pessoa(int codigo, String nome, String contribuinte, String username, String password, double salarioBruto, boolean isAdmin, TipoPessoa tipoPessoa) {
         this.codigo = codigo;
         this.nome = nome;
         this.contribuinte = contribuinte;
@@ -66,11 +66,11 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public double getContribuinte() {
+    public String getContribuinte() {
         return contribuinte;
     }
 
-    public void setContribuinte(double contribuinte) {
+    public void setContribuinte(String contribuinte) {
         this.contribuinte = contribuinte;
     }
 
@@ -119,14 +119,14 @@ public class Pessoa {
             return "-------------------------------" + "\n"
                     + "Codigo: " + this.codigo + "\n"
                     + "Nome: " + this.nome + "\n"
-                    + "Nif: " + String.format("%.0f", this.contribuinte) + "\n"
+                    + "Nif: " + this.contribuinte + "\n"
                     + "Tipo de pessoa: " + this.tipoPessoa;
 
         } else {
             return "-------------------------------" + "\n"
                     + "Codigo: " + this.codigo + "\n"
                     + "Nome: " + this.nome + "\n"
-                    + "Nif: " + String.format("%.0f", this.contribuinte) + "\n"
+                    + "Nif: " + this.contribuinte + "\n"
                     + "Username: " + this.username + "\n"
                     + "Password: " + this.password + "\n"
                     + "Salário Bruto: " + String.format("%.2f", this.salarioBruto) + "\n"
