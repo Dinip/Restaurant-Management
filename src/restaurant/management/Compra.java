@@ -6,6 +6,7 @@
 package restaurant.management;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 /**
  *
@@ -17,14 +18,14 @@ public class Compra {
     private Pessoa funcionario;
     private Pessoa cliente;
     private double preçoFinal;
-    private Menu menu;
+    private ArrayList<Produto> produtos;
 
-    public Compra(LocalDateTime data, Pessoa funcionario, Pessoa cliente, double preçoFinal, Menu menu) {
+    public Compra(LocalDateTime data, Pessoa funcionario, Pessoa cliente, double preçoFinal, ArrayList<Produto> produtos) {
         this.data = data;
         this.funcionario = funcionario;
         this.cliente = cliente;
         this.preçoFinal = preçoFinal;
-        this.menu = menu;
+        this.produtos = produtos;
     }
 
     public LocalDateTime getData() {
@@ -59,11 +60,21 @@ public class Compra {
         this.preçoFinal = preçoFinal;
     }
 
-    public Menu getMenu() {
-        return menu;
+    public ArrayList<Produto> getProdutos() {
+        return produtos;
     }
 
-    public void setMenu(Menu menu) {
-        this.menu = menu;
+    public void setProdutos(ArrayList<Produto> produtos) {
+        this.produtos = produtos;
+    }
+
+    public String getAllInfo() {
+        return "-------------------------------" + "\n"
+                + "Data: " + this.data + "\n"
+                + "Vendido por: " + this.funcionario.getNome() + "\n"
+                + "Cliente: " + this.cliente.getNome() + "\n"
+                + "Nif: " + this.cliente.getContribuinte() + "\n"
+                + "Preço Final: " + String.format("%.2f", this.preçoFinal) + "€\n"
+                + "Produtos:";                
     }
 }

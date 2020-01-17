@@ -15,6 +15,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -36,31 +38,36 @@ public class RestaurantManagement {
     public static String nomeLogged = "";
     private static final File pessoaFile = new File("C:\\Users\\Dinip\\Desktop\\pessoas.txt");
     private static final File produtoFile = new File("C:\\Users\\Dinip\\Desktop\\produtos.txt");
+    private static final File comprasFile = new File("C:\\Users\\Dinip\\Desktop\\compras.txt");
     private static Gson gson = new Gson();
 
     public static void main(String[] args) {
-        //precisa verificação quando ler para ver se ficheiro existe
-        //caso nao exista deve criar
+        verifyFiles();
         readPessoa();
         if (produtoFile.length() < 1) {
             System.out.println(produtoFile + " Ficheiro vazio");
         } else {
             readProduto();
         }
+        if (comprasFile.length() < 1) {
+            System.out.println(comprasFile + " Ficheiro vazio");
+        } else {
+            readCompras();
+        }
         menuPreLogin();
 
         //pessoaStorage.add(new Pessoa(1, "Administrador Geral", "123456789", "admin", "admin", 1000, true, TipoPessoa.Funcionário));
-
     }
 
     //----------------------------------------------------------------------------------------------//
-
     //Writes the updates to files and loads again to arraylists
     private static void reloadFiles() {
         writePessoa(gson.toJson(pessoaStorage));
         readPessoa();
         writeProduto(gson.toJson(produtoStorage));
         readProduto();
+        writeCompras(gson.toJson(compraStorage));
+        readCompras();
     }
 
     //Menu inicial
@@ -119,13 +126,12 @@ public class RestaurantManagement {
         System.out.println("0. Logout");
         System.out.println("1. Gerir clientes");
         System.out.println("2. Gerir produtos");
-        System.out.println("3. Gerir menus");
-        System.out.println("4. Gerir compras");
+        System.out.println("3. Gerir compras");
         int escolha = -1;
         do {
             System.out.print("Escolha uma opção: ");
             escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+        } while (escolha < 0 || escolha > 3);
 
         switch (escolha) {
             case 0:
@@ -140,10 +146,6 @@ public class RestaurantManagement {
                 voltarMenuLogged();
                 break;
             case 3:
-                subMenuMenusEmFuncionario();
-                voltarMenuLogged();
-                break;
-            case 4:
                 subMenuComprasAmbos();
                 voltarMenuLogged();
                 break;
@@ -159,13 +161,12 @@ public class RestaurantManagement {
         System.out.println("1. Gerir clientes");
         System.out.println("2. Gerir funcionarios");
         System.out.println("3. Gerir produtos");
-        System.out.println("4. Gerir menus");
-        System.out.println("5. Gerir compras");
+        System.out.println("4. Gerir compras");
         int escolha = -1;
         do {
             System.out.print("Escolha uma opção: ");
             escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 5);
+        } while (escolha < 0 || escolha > 4);
 
         switch (escolha) {
             case 0:
@@ -184,10 +185,6 @@ public class RestaurantManagement {
                 voltarMenuLogged();
                 break;
             case 4:
-                subMenuMenusEmAdmin();
-                voltarMenuLogged();
-                break;
-            case 5:
                 subMenuComprasAmbos();
                 voltarMenuLogged();
                 break;
@@ -322,84 +319,38 @@ public class RestaurantManagement {
         }
     }
 
-    //SubMenu para gerir produtos quando logado como admin
-    private static void subMenuMenusEmAdmin() {
-        System.out.println("--------------------------------------------------");
-        System.out.println("Gestão de menus. Logado como: " + nomeLogged.toUpperCase());
-        System.out.println("--------------------------------------------------");
-        System.out.println("0. Back");
-        System.out.println("1. Listar");
-        if (isAdminGlobal) {
-            System.out.println("2. Criar");
-            System.out.println("3. Editar");
-            System.out.println("4. Remover");
-        }
-        int escolha = -1;
-        do {
-            System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while ((isAdminGlobal && (escolha < 0 || escolha > 4)) || escolha < 0 || escolha > 1);
-
-        switch (escolha) {
-            case 0:
-                voltarMenuLogged();
-                break;
-            case 1:
-                listarMenus();
-                break;
-            case 2:
-                criarMenu();
-                break;
-            case 3:
-                editarMenu();
-                break;
-            case 4:
-                removerMenu();
-                break;
-        }
-    }
-
-    //SubMenu para gerir produtos quando logado como admin
-    private static void subMenuMenusEmFuncionario() {
-        System.out.println("--------------------------------------------------");
-        System.out.println("Gestão de menus. Logado como: " + nomeLogged.toUpperCase());
-        System.out.println("--------------------------------------------------");
-        System.out.println("0. Back");
-        System.out.println("1. Listar");
-        if (isAdminGlobal) {
-            System.out.println("2. Criar");
-            System.out.println("3. Editar");
-            System.out.println("4. Remover");
-        }
-        int escolha = -1;
-        do {
-            System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while ((isAdminGlobal && (escolha < 0 || escolha > 4)) || escolha < 0 || escolha > 1);
-
-        switch (escolha) {
-            case 0:
-                voltarMenuLogged();
-                break;
-            case 1:
-                listarMenus();
-                break;
-            case 2:
-                criarMenu();
-                break;
-            case 3:
-                editarMenu();
-                break;
-            case 4:
-                removerMenu();
-                break;
-        }
-    }
-
     private static void subMenuComprasAmbos() {
         System.out.println("--------------------------------------------------");
         System.out.println("Gestão de compras. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("--------------------------------------------------");
+        System.out.println("0. Back");
+        System.out.println("1. Apresentar compras de cliente");
+        System.out.println("2. Apresentar vendas de funcionario");
+        System.out.println("3. Apresentar vendas de uma data");
+        System.out.println("4. Criar");
+        int escolha = -1;
+        do {
+            System.out.print("Escolha uma opção: ");
+            escolha = Integer.parseInt(input.nextLine());
+        } while (escolha < 0 || escolha > 4);
+
+        switch (escolha) {
+            case 0:
+                voltarMenuLogged();
+                break;
+            case 1:
+                apresentarComprasCliente();
+                break;
+            case 2:
+                apresentarVendasFuncionario();
+                break;
+            case 3:
+                apresentarVendasData();
+                break;
+            case 4:
+                criarVenda();
+                break;
+        }
 
     }
 
@@ -423,7 +374,7 @@ public class RestaurantManagement {
         System.out.println("-------------------------------");
     }
 
-    //Criar novos clientes
+    //Criar novo cliente
     private static void criarCliente() {
         //Precisa de incrementar baseado no ultimo numero existente
         //Codigo da ultima pessoa + 1
@@ -436,7 +387,7 @@ public class RestaurantManagement {
         reloadFiles();
     }
 
-    //Editar informações de clientes
+    //Editar informações de cliente
     private static void editarCliente() {
         int contadorClientes = 0;
         int valorLido = 0;
@@ -472,7 +423,7 @@ public class RestaurantManagement {
             int index = 0;
             for (Pessoa cliente : pessoaStorage) {
                 index = pessoaStorage.indexOf(cliente);
-                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index <= pessoaStorage.size())) {
+                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
                     editar = true;
                     break;
                 }
@@ -489,13 +440,12 @@ public class RestaurantManagement {
                 System.out.println("Cliente com id " + valorLido + " editado.");
                 reloadFiles();
             }
-
         } else {
             System.out.println("Não existem clientes.");
         }
     }
 
-    //Remover clientes do sistema
+    //Remover cliente do sistema
     private static void removerCliente() {
         int contadorClientes = 0;
         int valorLido = 0;
@@ -533,7 +483,7 @@ public class RestaurantManagement {
             int index = 0;
             for (Pessoa cliente : pessoaStorage) {
                 index = pessoaStorage.indexOf(cliente);
-                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index <= pessoaStorage.size())) {
+                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
                     remover = true;
                     break;
                 }
@@ -560,7 +510,7 @@ public class RestaurantManagement {
         System.out.println("-------------------------------");
     }
 
-    //Criar novos funcionários
+    //Criar novo funcionário
     private static void criarFuncionario() {
         //Precisa de incrementar baseado no ultimo numero existente
         //Codigo da ultima pessoa + 1
@@ -581,12 +531,11 @@ public class RestaurantManagement {
             //Verificaçao
             for (int contador = 0; contador < pessoaStorage.size(); contador++) {
                 if (pessoaStorage.get(contador).getUsername().equalsIgnoreCase(username)) {
-                    System.out.println(pessoaStorage.get(contador).getUsername().contentEquals(username));
+                    System.out.println("Este utilizador já existe no sistema. Por favor escolhe outro.");
                     userExiste = true;
                     break;
                 } else {
                     userExiste = false;
-                    System.out.println("Este utilizador já existe no sistema. Por favor escolhe outro.");
                 }
             }
         } while (userExiste);
@@ -611,7 +560,7 @@ public class RestaurantManagement {
         reloadFiles();
     }
 
-    //Editar informações de funcionários
+    //Editar informações do funcionário
     private static void editarFuncionario() {
         int contadorFuncionarios = 0;
         int valorLido = 0;
@@ -651,7 +600,7 @@ public class RestaurantManagement {
             int index = 0;
             for (Pessoa funcionario : pessoaStorage) {
                 index = pessoaStorage.indexOf(funcionario);
-                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index <= pessoaStorage.size())) {
+                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
                     editar = true;
                     break;
                 }
@@ -673,11 +622,11 @@ public class RestaurantManagement {
                     //Verificaçao
                     for (int contadorUser = 0; contadorUser < pessoaStorage.size(); contadorUser++) {
                         if ((pessoaStorage.get(contadorUser).getUsername().equalsIgnoreCase(username)) && (!pessoaStorage.get(contadorUser).getUsername().equalsIgnoreCase(pessoaStorage.get(index).getUsername()))) {
+                            System.out.println("Este utilizador já existe no sistema. Por favor escolhe outro.");
                             userExiste = true;
                             break;
                         } else {
                             userExiste = false;
-                            System.out.println("Este utilizador já existe no sistema. Por favor escolhe outro.");
                         }
                     }
                 } while (userExiste);
@@ -701,14 +650,14 @@ public class RestaurantManagement {
 
                 pessoaStorage.set(index, new Pessoa(valorLido, nome, nif, username, password, salario, isAdmin, TipoPessoa.Funcionário));
                 System.out.println("Funcionário com id " + valorLido + " editado.");
+                reloadFiles();
             }
-            reloadFiles();
         } else {
             System.out.println("Não existem funcionários.");
         }
     }
 
-    //Remover funcionarios do sistema
+    //Remover funcionario do sistema
     private static void removerFuncionario() {
         int contadorFuncionarios = 0;
         int valorLido = 0;
@@ -748,7 +697,7 @@ public class RestaurantManagement {
             int index = 0;
             for (Pessoa funcionario : pessoaStorage) {
                 index = pessoaStorage.indexOf(funcionario);
-                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index <= pessoaStorage.size())) {
+                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
                     remover = true;
                     break;
                 }
@@ -757,8 +706,8 @@ public class RestaurantManagement {
             if (remover) {
                 pessoaStorage.remove(index);
                 System.out.println("Funcionário com id " + valorLido + " removido.");
+                reloadFiles();
             }
-            reloadFiles();
         } else {
             System.out.println("Não existem funcionários.");
         }
@@ -768,7 +717,7 @@ public class RestaurantManagement {
     //Codigo referente a produtos
     //Apresentar lista de produtos
     private static void listarProdutos() {
-        if (produtoStorage.size() > 1) {
+        if (produtoStorage.size() > 0) {
             for (Produto produto : produtoStorage) {
                 System.out.println(produto.getAllInfo());
             }
@@ -783,7 +732,7 @@ public class RestaurantManagement {
         int codigo = 1;
 
         if (produtoStorage.size() > 0) {
-            codigo = produtoStorage.get(produtoStorage.size() - 1).getCodigo();
+            codigo = produtoStorage.get(produtoStorage.size() - 1).getCodigo() + 1;
         }
 
         System.out.print("Indique o nome do produto: ");
@@ -812,65 +761,409 @@ public class RestaurantManagement {
                 break;
         }
 
-        System.out.print("Indique a decrição do produto: ");
-        String descriçao = input.nextLine();
-
         System.out.print("Indique o preço do produto: ");
         double preço = Double.parseDouble(input.nextLine());
 
         System.out.print("Indique o stock do produto: ");
         int stock = Integer.parseInt(input.nextLine());
 
-        produtoStorage.add(new Produto(codigo, nome, tipo, descriçao, preço, stock));
+        produtoStorage.add(new Produto(codigo, nome, tipo, preço, stock));
         reloadFiles();
     }
 
     //Editar informações de produto
     private static void editarProduto() {
+        int contadorProdutos = 0;
+        int valorLido = 0;
+        int contador = 0;
 
+        //Corre se existirem produtos no sistema
+        if (produtoStorage.size() > 0) {
+            Integer[] idsProdutos = new Integer[contadorProdutos];
+            for (Produto produto : produtoStorage) {
+                System.out.println(produto.getAllInfo());
+                idsProdutos[contador] = produto.getCodigo();
+                contador++;
+            }
+            System.out.println("-------------------------------");
+
+            do {
+                System.out.print("Indique o id do produto que quer editar: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (!Arrays.asList(idsProdutos).contains(valorLido)) {
+                    System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsProdutos).contains(valorLido));
+
+            boolean editar = false;
+            int index = 0;
+            for (Produto produto : produtoStorage) {
+                index = produtoStorage.indexOf(produto);
+                if ((produto.getCodigo() == valorLido) && (index >= 0) && (index < produtoStorage.size())) {
+                    editar = true;
+                    break;
+                }
+            }
+
+            if (editar) {
+                System.out.print("Indique o novo nome do produto: ");
+                String nome = input.nextLine();
+
+                TipoProduto tipo = null;
+                int escolha = 0;
+
+                do {
+                    System.out.println("1. Refeição");
+                    System.out.println("2. Bebida");
+                    System.out.println("3. Sobremesa");
+                    System.out.print("Indique o tipo de produto: ");
+                    escolha = Integer.parseInt(input.nextLine());
+                } while (escolha < 1 || escolha > 3);
+
+                switch (escolha) {
+                    case 1:
+                        tipo = TipoProduto.Refeiçao;
+                        break;
+                    case 2:
+                        tipo = TipoProduto.Bebida;
+                        break;
+                    case 3:
+                        tipo = TipoProduto.Sobremesa;
+                        break;
+                }
+
+                System.out.print("Indique o novo preço do produto: ");
+                double preço = Double.parseDouble(input.nextLine());
+
+                System.out.print("Indique o novo stock do produto: ");
+                int stock = Integer.parseInt(input.nextLine());
+
+                produtoStorage.set(index, new Produto(valorLido, nome, tipo, preço, stock));
+                System.out.println("Produto com id " + valorLido + " editado.");
+                reloadFiles();
+            }
+        } else {
+            System.out.println("Não existem produtos.");
+        }
     }
 
-    //Remover produtos do sistema
+    //Remover produto do sistema
     private static void removerProduto() {
+        int contadorProdutos = 0;
+        int valorLido = 0;
+        int contador = 0;
 
+        //"Conta" quantos produtos existem no sistema
+        for (Produto produto : produtoStorage) {
+            contadorProdutos++;
+        }
+
+        //Corre se existirem produtos no sistema
+        if (contadorProdutos > 0) {
+            Integer[] idsProdutos = new Integer[contadorProdutos];
+            for (Produto produto : produtoStorage) {
+                System.out.println(produto.getAllInfo());
+                idsProdutos[contador] = produto.getCodigo();
+                contador++;
+            }
+            System.out.println("-------------------------------");
+
+            do {
+                System.out.print("Indique o id do produto que quer remover: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (!Arrays.asList(idsProdutos).contains(valorLido)) {
+                    System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsProdutos).contains(valorLido));
+
+            boolean remover = false;
+            int index = 0;
+            for (Produto produto : produtoStorage) {
+                index = produtoStorage.indexOf(produto);
+                if ((produto.getCodigo() == valorLido) && (index >= 0) && (index < produtoStorage.size())) {
+                    remover = true;
+                    break;
+                }
+            }
+
+            if (remover) {
+                produtoStorage.remove(index);
+                System.out.println("Produto com id " + valorLido + " editado.");
+                reloadFiles();
+            }
+        } else {
+            System.out.println("Não existem produtos.");
+        }
     }
 
     //----------------------------------------------------------------------------------------------//
-    //Codigo referente a menus
-    //Apresentar lista de menus
-    private static void listarMenus() {
+    //Codigo referente a compras
+    //Apresentar compras de um cliente
+    private static void apresentarComprasCliente() {
+        int quantidadeClientes = 0;
+        int valorLido = 0;
+        int contadorClientes = 0;
+
+        //"Conta" quantos clientes existem no sistema
+        for (Pessoa cliente : pessoaStorage) {
+            if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
+                quantidadeClientes++;
+            }
+        }
+
+        //Corre se existirem clientes no sistema
+        if (quantidadeClientes > 0) {
+            Integer[] idsClientes = new Integer[quantidadeClientes];
+            for (Pessoa cliente : pessoaStorage) {
+                if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
+                    System.out.println(cliente.getAllInfo());
+                    idsClientes[contadorClientes] = cliente.getCodigo();
+                    contadorClientes++;
+                }
+            }
+            System.out.println("-------------------------------");
+            do {
+                System.out.println("Caso queira voltar, prima 0");
+                System.out.print("Indique o id do cliente que consumiu: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (valorLido == 0) {
+                    voltarMenuLogged();
+                    break;
+                } else if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsClientes).contains(valorLido));
+
+            for (Compra vendas : compraStorage) {
+                if (vendas.getCliente().getCodigo() == valorLido) {
+                    System.out.println("-------------------------------");
+                    System.out.println("Compras efetuadas por " + vendas.getCliente().getNome());
+                    System.out.println(vendas.getAllInfo());
+                    for (Produto produto : vendas.getProdutos()) {
+                        System.out.println(produto.getInfoVenda());
+                    }
+                }
+            }
+        }
 
     }
+    //Apresentar vendas de um funcionario
 
-    //Criar novo menu
-    private static void criarMenu() {
+    private static void apresentarVendasFuncionario() {
+        int quantidadeFuncionarios = 0;
+        int contadorFuncionarios = 0;
+        int valorLido = 0;
+        //------------------------------------------------------------//
+        //"Conta" quantos funcionarios existem no sistema
+        for (Pessoa funcionario : pessoaStorage) {
+            if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionário)) {
+                quantidadeFuncionarios++;
+            }
+        }
 
+        //Corre se existirem funcionarios no sistema
+        if (quantidadeFuncionarios > 0) {
+            Integer[] idsFuncionario = new Integer[quantidadeFuncionarios];
+            for (Pessoa funcionario : pessoaStorage) {
+                if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionário)) {
+                    System.out.println(funcionario.getAllInfo());
+                    idsFuncionario[contadorFuncionarios] = funcionario.getCodigo();
+                    contadorFuncionarios++;
+                }
+            }
+            System.out.println("-------------------------------");
+
+            do {
+                System.out.print("Indique o id do funcionário que vendeu: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (valorLido == 0) {
+                    voltarMenuLogged();
+                    break;
+                } else if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsFuncionario).contains(valorLido));
+
+            for (Compra vendas : compraStorage) {
+                if (vendas.getFuncionario().getCodigo() == valorLido) {
+                    System.out.println("-------------------------------");
+                    System.out.println("Vendas efetuadas por " + vendas.getFuncionario().getNome());
+                    System.out.println(vendas.getAllInfo());
+                    for (Produto produto : vendas.getProdutos()) {
+                        System.out.println(produto.getInfoVenda());
+                    }
+                }
+            }
+        }
     }
 
-    //Editar informações de menus
-    private static void editarMenu() {
+    //Apresentar vendes de uma data
+    private static void apresentarVendasData() {
 
+        System.out.print("Indique o ano da compra: ");
+        int ano = Integer.parseInt(input.nextLine());
+
+        System.out.print("Indique o mes da compra: ");
+        int mes = Integer.parseInt(input.nextLine());
+
+        System.out.print("Indique o dia da compra: ");
+        int dia = Integer.parseInt(input.nextLine());
+
+        System.out.println("-------------------------------");
+                System.out.println("Vendas efetuadas a " + dia + "/" + mes + "/" + ano);
+        
+        for (Compra vendas : compraStorage) {
+            if ((vendas.getData().getYear() == ano) && (vendas.getData().getMonthValue()== mes) && (vendas.getData().getDayOfMonth()) == dia) {
+                System.out.println("-------------------------------");
+                System.out.println(vendas.getAllInfo());
+                for (Produto produto : vendas.getProdutos()) {
+                    System.out.println(produto.getInfoVenda());
+                }
+            }
+        }
     }
 
-    //Remover menus do sistema
-    private static void removerMenu() {
+    //Criar compras
+    private static void criarVenda() {
+        Pessoa clienteComprou = null;
+        int quantidadeClientes = 0;
+        int valorLido = 0;
+        int contadorClientes = 0;
+        //------------------------------------------------------------//
+        //"Conta" quantos clientes existem no sistema
+        for (Pessoa cliente : pessoaStorage) {
+            if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
+                quantidadeClientes++;
+            }
+        }
 
+        //Corre se existirem clientes no sistema
+        if (quantidadeClientes > 0) {
+            Integer[] idsClientes = new Integer[quantidadeClientes];
+            for (Pessoa cliente : pessoaStorage) {
+                if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
+                    System.out.println(cliente.getAllInfo());
+                    idsClientes[contadorClientes] = cliente.getCodigo();
+                    contadorClientes++;
+                }
+            }
+            System.out.println("-------------------------------");
+            do {
+                System.out.print("Indique o id do cliente que consumiu: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsClientes).contains(valorLido));
+
+            int index = 0;
+            for (Pessoa cliente : pessoaStorage) {
+                index = pessoaStorage.indexOf(cliente);
+                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
+                    clienteComprou = cliente;
+                    break;
+                }
+            }
+        } else {
+            System.out.println("Não existem clientes.");
+        }
+
+        Pessoa funcionarioVendeu = null;
+        int quantidadeFuncionarios = 0;
+        int contadorFuncionarios = 0;
+        valorLido = 0;
+        //------------------------------------------------------------//
+        //"Conta" quantos funcionarios existem no sistema
+        for (Pessoa funcionario : pessoaStorage) {
+            if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionário)) {
+                quantidadeFuncionarios++;
+            }
+        }
+
+        //Corre se existirem funcionarios no sistema
+        if (quantidadeFuncionarios > 0) {
+            Integer[] idsFuncionario = new Integer[quantidadeFuncionarios];
+            for (Pessoa funcionario : pessoaStorage) {
+                if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionário)) {
+                    System.out.println(funcionario.getAllInfo());
+                    idsFuncionario[contadorFuncionarios] = funcionario.getCodigo();
+                    contadorFuncionarios++;
+                }
+            }
+            System.out.println("-------------------------------");
+
+            do {
+                System.out.print("Indique o id do funcionário que vendeu: ");
+                valorLido = Integer.parseInt(input.nextLine());
+                if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                    System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
+                }
+            } while (!Arrays.asList(idsFuncionario).contains(valorLido));
+
+            int index = 0;
+            for (Pessoa funcionario : pessoaStorage) {
+                index = pessoaStorage.indexOf(funcionario);
+                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
+                    funcionarioVendeu = funcionario;
+                    break;
+                }
+            }
+        }
+
+        Produto produtoVendido = null;
+        int escolha = 0;
+        int contadorProdutos = 0;
+        double preçoTotal = 0;
+        ArrayList<Produto> produtosCompra = new ArrayList<Produto>();
+
+        //------------------------------------------------------------//
+        if (!produtoStorage.isEmpty()) {
+            System.out.println(produtoStorage.size());
+            Integer[] idsProduto = new Integer[produtoStorage.size()];
+            for (Produto produto : produtoStorage) {
+                System.out.println(produto.getAllInfo());
+                idsProduto[contadorProdutos] = produto.getCodigo();
+                contadorProdutos++;
+            }
+            System.out.println("-------------------------------");
+            do {
+                do {
+                    System.out.print("Indique o id do produto que foi consumido: ");
+                    valorLido = Integer.parseInt(input.nextLine());
+                    if (valorLido == 0) {
+                        break;
+                    } else if (!Arrays.asList(idsProduto).contains(valorLido)) {
+                        System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } while (!Arrays.asList(idsProduto).contains(valorLido));
+
+                if (valorLido != 0) {
+                    int quantidadeComprada = 0;
+                    do {
+                        System.out.print("Indique a quantidade que foi consumida: ");
+                        quantidadeComprada = Integer.parseInt(input.nextLine());
+                    } while (quantidadeComprada < 1);
+
+                    for (int contadorQuantidade = 0; contadorQuantidade < quantidadeComprada; contadorQuantidade++) {
+                        for (Produto produto : produtoStorage) {
+                            if ((produto.getCodigo() == valorLido)) {
+                                preçoTotal += produto.getPreço();
+                                produtosCompra.add(produto);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } while (valorLido != 0);
+        }
+
+        compraStorage.add(new Compra(LocalDateTime.now(), funcionarioVendeu, clienteComprou, preçoTotal, produtosCompra));
+        System.out.println("Compra adicionada com sucesso!");
+        reloadFiles();
     }
 
     // Save to file (Pessoa)
     private static void writePessoa(String myData) {
-        if (!pessoaFile.exists()) {
-            try {
-                File directory = new File(pessoaFile.getParent());
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                pessoaFile.createNewFile();
-            } catch (IOException e) {
-                System.out.println("Excepton Occured: " + e.toString());
-            }
-        }
-
         try {
             // Convenience class for writing character files
             FileWriter crunchifyWriter;
@@ -913,18 +1206,6 @@ public class RestaurantManagement {
 
     // Save to file (Produto)
     private static void writeProduto(String myData) {
-        if (!produtoFile.exists()) {
-            try {
-                File directory = new File(produtoFile.getParent());
-                if (!directory.exists()) {
-                    directory.mkdirs();
-                }
-                produtoFile.createNewFile();
-            } catch (IOException e) {
-                System.out.println("Excepton Occured: " + e.toString());
-            }
-        }
-
         try {
             // Convenience class for writing character files
             FileWriter crunchifyWriter;
@@ -963,5 +1244,86 @@ public class RestaurantManagement {
         System.out.println("---------------------------------------------------------------------");
         System.out.println("Produtos data loaded successfully from file " + produtoFile);
 
+    }
+
+    // Save to file (Compras)
+    private static void writeCompras(String myData) {
+        try {
+            // Convenience class for writing character files
+            FileWriter crunchifyWriter;
+            //False refere-se a "append". Neste caso quero dar overwrite ao que existe
+            crunchifyWriter = new FileWriter(comprasFile.getAbsoluteFile(), false);
+
+            // Writes text to a character-output stream
+            BufferedWriter bufferWriter = new BufferedWriter(crunchifyWriter);
+            bufferWriter.write(myData);
+            bufferWriter.close();
+
+            System.out.println("---------------------------------------------------------------------");
+            System.out.println("Produtos data saved at file location: " + comprasFile + " Data: " + myData);
+        } catch (IOException e) {
+            System.out.println("Hmm.. Got an error while saving Company data to file " + e.toString());
+        }
+    }
+
+    // Read from file (Compras)
+    private static void readCompras() {
+        if (!comprasFile.exists()) {
+            System.out.println("File doesn't exist");
+        }
+        InputStreamReader isReader;
+        try {
+            isReader = new InputStreamReader(new FileInputStream(comprasFile), "UTF-8");
+            JsonReader myReader = new JsonReader(isReader);
+
+            Type arrayListComprasType = new TypeToken<ArrayList<Compra>>() {
+            }.getType();
+            compraStorage = gson.fromJson(myReader, arrayListComprasType);
+
+        } catch (Exception e) {
+            System.out.println("error load cache from file " + e.toString());
+        }
+        System.out.println("---------------------------------------------------------------------");
+        System.out.println("Produtos data loaded successfully from file " + comprasFile);
+
+    }
+
+    private static void verifyFiles() {
+        //Verifica se pessoa.txt existe
+        if (!pessoaFile.exists()) {
+            try {
+                File directory = new File(pessoaFile.getParent());
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                pessoaFile.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Excepton Occured: " + e.toString());
+            }
+        }
+        //Verifica se produtos.txt existe
+        if (!produtoFile.exists()) {
+            try {
+                File directory = new File(produtoFile.getParent());
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                produtoFile.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Excepton Occured: " + e.toString());
+            }
+        }
+        //Verifica se compras.txt existe
+        if (!comprasFile.exists()) {
+            try {
+                File directory = new File(comprasFile.getParent());
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+                comprasFile.createNewFile();
+            } catch (IOException e) {
+                System.out.println("Excepton Occured: " + e.toString());
+            }
+        }
     }
 }
