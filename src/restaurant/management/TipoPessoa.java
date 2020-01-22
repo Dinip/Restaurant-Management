@@ -10,6 +10,6 @@ package restaurant.management;
  * @author Dinis Pimpão e Gonçalo Gouveia
  */
 public enum TipoPessoa {
-    Funcionário,
+    Funcionario,
     Cliente;
 }

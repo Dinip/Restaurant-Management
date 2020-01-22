@@ -121,8 +121,11 @@ public class Pessoa {
                     + "Nome: " + this.nome + "\n"
                     + "Nif: " + this.contribuinte + "\n"
                     + "Tipo de pessoa: " + this.tipoPessoa;
-
         } else {
+            String adminFormat = "Não";
+            if (this.isAdmin) {
+                adminFormat = "Sim";
+            }
             return "-------------------------------" + "\n"
                     + "Codigo: " + this.codigo + "\n"
                     + "Nome: " + this.nome + "\n"
@@ -130,7 +133,7 @@ public class Pessoa {
                     + "Username: " + this.username + "\n"
                     + "Password: " + this.password + "\n"
                     + "Salário Bruto: " + String.format("%.2f", this.salarioBruto) + "\n"
-                    + "É administrador: " + this.isAdmin + "\n"
+                    + "É administrador: " + adminFormat + "\n"
                     + "Tipo de pessoa: " + this.tipoPessoa;
         }
     }

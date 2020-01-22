@@ -81,8 +81,7 @@ public class Produto {
 
     public String getInfoVenda() {
         return "-------------------------------" + "\n"
-                + "Nome: " + this.nome + "\n"
-                + "Preço: " + String.format("%.2f", this.preço) + "€\n"
-                + "Tipo de produto: " + this.tipoProduto;
+                + "Tipo de produto: " + this.tipoProduto + "\n"
+                + "Nome: " + this.nome + "   Preço: " + String.format("%.2f", this.preço) + "€";
     }
 }
