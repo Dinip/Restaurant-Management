@@ -13,18 +13,15 @@ public class Pessoa {
 
     private int codigo;
     private String nome;
-    private String contribuinte;
+    private int contribuinte;
     private String username;
     private String password;
     private double salarioBruto;
     private boolean isAdmin;
     private TipoPessoa tipoPessoa;
 
-    public Pessoa() {
-    }
-
     //Contrutor para cliente
-    public Pessoa(int codigo, String nome, String contribuinte, TipoPessoa tipoPessoa) {
+    public Pessoa(int codigo, String nome, int contribuinte, TipoPessoa tipoPessoa) {
         this.codigo = codigo;
         this.nome = nome;
         this.contribuinte = contribuinte;
@@ -39,7 +36,7 @@ public class Pessoa {
     }
 
     //Contrutor para funcionarios
-    public Pessoa(int codigo, String nome, String contribuinte, String username, String password, double salarioBruto, boolean isAdmin, TipoPessoa tipoPessoa) {
+    public Pessoa(int codigo, String nome, int contribuinte, String username, String password, double salarioBruto, boolean isAdmin, TipoPessoa tipoPessoa) {
         this.codigo = codigo;
         this.nome = nome;
         this.contribuinte = contribuinte;
@@ -66,11 +63,11 @@ public class Pessoa {
         this.nome = nome;
     }
 
-    public String getContribuinte() {
+    public int getContribuinte() {
         return contribuinte;
     }
 
-    public void setContribuinte(String contribuinte) {
+    public void setContribuinte(int contribuinte) {
         this.contribuinte = contribuinte;
     }
 
@@ -137,4 +134,13 @@ public class Pessoa {
                     + "Tipo de pessoa: " + this.tipoPessoa;
         }
     }
+
+    public String getInfoReduzida() {
+        return "-------------------------------" + "\n"
+                + "Codigo: " + this.codigo + "\n"
+                + "Nome: " + this.nome + "\n"
+                + "Nif: " + this.contribuinte + "\n"
+                + "Tipo de pessoa: " + this.tipoPessoa;
+    }
+
 }

@@ -14,20 +14,14 @@ public class Produto {
     private int codigo;
     private String nome;
     private TipoProduto tipoProduto;
-    private double preço;
-    private int stock;
-
-    //Construtor vazio
-    public Produto() {
-    }
+    private double preco;
 
     //Contrutor com atributos
-    public Produto(int codigo, String nome, TipoProduto tipoProduto, double preço, int stock) {
+    public Produto(int codigo, String nome, TipoProduto tipoProduto, double preco) {
         this.codigo = codigo;
         this.nome = nome;
         this.tipoProduto = tipoProduto;
-        this.preço = preço;
-        this.stock = stock;
+        this.preco = preco;
     }
 
     public int getCodigo() {
@@ -54,34 +48,25 @@ public class Produto {
         this.tipoProduto = tipoProduto;
     }
 
-    public double getPreço() {
-        return preço;
+    public double getPreco() {
+        return preco;
     }
 
-    public void setPreço(double preço) {
-        this.preço = preço;
-    }
-
-    public int getStock() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
+    public void setPreco(double preco) {
+        this.preco = preco;
     }
 
     public String getAllInfo() {
         return "-------------------------------" + "\n"
                 + "Codigo: " + this.codigo + "\n"
                 + "Nome: " + this.nome + "\n"
-                + "Preço: " + String.format("%.2f", this.preço) + "€\n"
-                + "Stock: " + this.stock + "\n"
+                + "Preço: " + String.format("%.2f", this.preco) + "€\n"
                 + "Tipo de produto: " + this.tipoProduto;
     }
 
     public String getInfoVenda() {
         return "-------------------------------" + "\n"
                 + "Tipo de produto: " + this.tipoProduto + "\n"
-                + "Nome: " + this.nome + "   Preço: " + String.format("%.2f", this.preço) + "€";
+                + "Nome: " + this.nome + "   Preço: " + String.format("%.2f", this.preco) + "€";
     }
 }

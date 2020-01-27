@@ -35,7 +35,8 @@ public class RestaurantManagement {
     public static ArrayList<Compra> compraStorage = new ArrayList<Compra>();
     public static boolean isAdminGlobal = false;
     public static String nomeLogged = "";
-    private static final File pessoaFile = new File("ficheiros\\pessoa.txt");
+    //Ficheiros no mesmo diretorio que o programa corre (dinamico)
+    private static final File pessoaFile = new File("ficheiros\\pessoas.txt");
     private static final File produtoFile = new File("ficheiros\\produtos.txt");
     private static final File comprasFile = new File("ficheiros\\compras.txt");
     private static Gson gson = new Gson();
@@ -46,24 +47,22 @@ public class RestaurantManagement {
         //Caso o ficheiro da pessoa esteja vazio, cria uma pessoa como administrador
         //geral, para poder ser feito o login inicial
         if (pessoaFile.length() < 1) {
-            pessoaStorage.add(new Pessoa(1, "Administrador Geral", "123456789", "admin", "admin", 1000, true, TipoPessoa.Funcionario));
+            System.out.println(produtoFile + " Ficheiro pessoas vazio");
+            pessoaStorage.add(new Pessoa(1, "Administrador Geral", 123456789, "admin", "admin", 10000, true, TipoPessoa.Funcionario));
             writePessoa(gson.toJson(pessoaStorage));
             readPessoa();
-            for (Pessoa test : pessoaStorage) {
-                System.out.println(test.getTipoPessoa());
-            }
         } else {
             readPessoa();
         }
         //Caso o ficheiro de produtos esteja vazio, nao o vai ler
         if (produtoFile.length() < 1) {
-            System.out.println(produtoFile + " Ficheiro vazio");
+            System.out.println(produtoFile + " Ficheiro produtos vazio");
         } else {
             readProduto();
         }
         //Caso o ficheiro de compras esteja vazio, nao o vai ler
         if (comprasFile.length() < 1) {
-            System.out.println(comprasFile + " Ficheiro vazio");
+            System.out.println(comprasFile + " Ficheiro compras vazio");
         } else {
             readCompras();
         }
@@ -72,7 +71,7 @@ public class RestaurantManagement {
     }
 
     //----------------------------------------------------------------------------------------------//
-    //Guarda os 3 arraylists no ficheiro e lê importa o conteudo
+    //Guarda os 3 arraylists nos ficheiros e lê importa o conteudo
     //dos ficheiros novamente para os arraylists
     private static void reloadFiles() {
         writePessoa(gson.toJson(pessoaStorage));
@@ -85,24 +84,31 @@ public class RestaurantManagement {
 
     //Menu inicial (pre-autenticação)
     private static void menuPreLogin() {
-        int opçao = 0;
+        System.out.println("                                         .--,      .--,");
+        System.out.println("                                        (  (`.---.´  ) )");
+        System.out.println("                                        `.__/o   o\\__.´");
+        System.out.println("======================================     {=  ^  =}");
+        System.out.println("||                                  ||      >  -  <");
+        System.out.println("||    *Bem-vindo ao Restaurante*    ||     /       \\");
+        System.out.println("||                                  ||    //       \\\\");
+        System.out.println("||            1.Login               ||   //|   .   |\\\\");
+        System.out.println("||            0.Sair                ||    `\\       /´|_.-~^`´-.");
+        System.out.println("||                                  ||      \\  _  /--'         `");
+        System.out.println("======================================    ___)( )(___");
+        int opcao = -1;
+        boolean valido = false;
         do {
-            System.out.println("                                         .--,      .--,");
-            System.out.println("                                        (  (`.---.´  ) )");
-            System.out.println("                                        `.__/o   o\\__.´");
-            System.out.println("======================================     {=  ^  =}");
-            System.out.println("||                                  ||      >  -  <");
-            System.out.println("||    *Bem-vindo ao Restaurante*    ||     /       \\");
-            System.out.println("||                                  ||    //       \\\\");
-            System.out.println("||            1.Login               ||   //|   .   |\\\\");
-            System.out.println("||            0.Exit                ||    `\\       /´|_.-~^`´-.");
-            System.out.println("||                                  ||      \\  _  /--'         `");
-            System.out.println("======================================    ___)( )(___");
             System.out.print("Escolha a opção: ");
-            opçao = Integer.parseInt(input.nextLine());
-        } while ((opçao > 1) || (opçao < 0));
+            if (input.hasNextInt()) {
+                opcao = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while ((opcao > 1) || (opcao < 0) || !valido);
 
-        switch (opçao) {
+        switch (opcao) {
             case 1:
                 menuAuth();
             case 0:
@@ -120,9 +126,11 @@ public class RestaurantManagement {
             String pwd = input.nextLine();
 
             for (int contador = 0; contador < pessoaStorage.size(); contador++) {
+                //Verifica o login
                 if (pessoaStorage.get(contador).getUsername().contentEquals(user) && pessoaStorage.get(contador).getPassword().contentEquals(pwd)) {
                     nomeLogged = pessoaStorage.get(contador).getUsername();
                     valido = true;
+                    //Verifica se é admin ou não
                     if (pessoaStorage.get(contador).isIsAdmin()) {
                         isAdminGlobal = true;
                         menusLoggedAdmin();
@@ -150,17 +158,24 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Menu de funcionario. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Logout                                            |");
+        System.out.println("|   0. Terminar sessão                                   |");
         System.out.println("|   1. Gerir clientes                                    |");
         System.out.println("|   2. Gerir produtos                                    |");
         System.out.println("|   3. Gerir menus                                       |");
         System.out.println("|   4. Gerir compras                                     |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 3);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 3 || !valido);
 
         switch (escolha) {
             case 0:
@@ -190,17 +205,24 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Menu de administrador Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Logout                                            |");
+        System.out.println("|   0. Terminar sessão                                   |");
         System.out.println("|   1. Gerir clientes                                    |");
         System.out.println("|   2. Gerir funcionarios                                |");
         System.out.println("|   3. Gerir produtos                                    |");
         System.out.println("|   4. Gerir compras                                     |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 4 || !valido);
 
         switch (escolha) {
             case 0:
@@ -234,17 +256,24 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Gestão de clientes. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Back                                              |");
+        System.out.println("|   0. Voltar                                            |");
         System.out.println("|   1. Listar                                            |");
         System.out.println("|   2. Criar                                             |");
         System.out.println("|   3. Editar                                            |");
         System.out.println("|   4. Remover                                           |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 4 || !valido);
 
         switch (escolha) {
             case 0:
@@ -274,17 +303,24 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Gestão de funcionários. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Back                                              |");
+        System.out.println("|   0. Voltar                                            |");
         System.out.println("|   1. Listar                                            |");
         System.out.println("|   2. Criar                                             |");
         System.out.println("|   3. Editar                                            |");
         System.out.println("|   4. Remover                                           |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 4 || !valido);
 
         switch (escolha) {
             case 0:
@@ -314,17 +350,24 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Gestão de produtos. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Back                                              |");
+        System.out.println("|   0. Voltar                                            |");
         System.out.println("|   1. Listar                                            |");
         System.out.println("|   2. Criar                                             |");
         System.out.println("|   3. Editar                                            |");
         System.out.println("|   4. Remover                                           |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 4 || !valido);
 
         switch (escolha) {
             case 0:
@@ -354,14 +397,21 @@ public class RestaurantManagement {
         System.out.println("----------------------------------------------------------");
         System.out.println("     Gestão de produtos. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("----------------------------------------------------------");
-        System.out.println("|   0. Back                                              |");
+        System.out.println("|   0. Voltar                                            |");
         System.out.println("|   1. Listar                                            |");
         System.out.println("----------------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 1);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 1 || !valido);
 
         switch (escolha) {
             case 0:
@@ -382,17 +432,24 @@ public class RestaurantManagement {
         System.out.println("--------------------------------------------------");
         System.out.println("     Gestão de compras. Logado como: " + nomeLogged.toUpperCase());
         System.out.println("--------------------------------------------------");
-        System.out.println("|   0. Back                                      |");
+        System.out.println("|   0. Voltar                                    |");
         System.out.println("|   1. Apresentar compras clientes               |");
         System.out.println("|   2. Apresentar vendas funcionario             |");
         System.out.println("|   3. Apresentar vendas data                    |");
         System.out.println("|   4. Criar                                     |");
         System.out.println("--------------------------------------------------");
         int escolha = -1;
+        boolean valido = false;
         do {
             System.out.print("Escolha uma opção: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 0 || escolha > 4);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 0 || escolha > 4 || !valido);
 
         switch (escolha) {
             case 0:
@@ -411,7 +468,6 @@ public class RestaurantManagement {
                 criarVenda();
                 break;
         }
-
     }
 
     //Verifica se o utilizador com login é admin ou funcionario
@@ -430,7 +486,7 @@ public class RestaurantManagement {
     private static void listarClientes() {
         boolean existe = false;
         for (Pessoa cliente : pessoaStorage) {
-            if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente) && (!cliente.getTipoPessoa().equals(TipoPessoa.Funcionario))) {
+            if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
                 System.out.println(cliente.getAllInfo());
                 existe = true;
             }
@@ -448,7 +504,7 @@ public class RestaurantManagement {
         System.out.print("Indique o nome do cliente: ");
         String nome = input.nextLine();
         System.out.print("Indique o número de contribuinte do cliente: ");
-        String nif = input.nextLine();
+        int nif = Integer.parseInt(input.nextLine());
         pessoaStorage.add(new Pessoa(codigo, nome, nif, TipoPessoa.Cliente));
         reloadFiles();
     }
@@ -458,6 +514,7 @@ public class RestaurantManagement {
         int contadorClientes = 0;
         int valorLido = 0;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos clientes existem no sistema
         for (Pessoa cliente : pessoaStorage) {
@@ -480,15 +537,21 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do cliente que quer editar: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                        System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (!Arrays.asList(idsClientes).contains(valorLido)) {
-                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while (!Arrays.asList(idsClientes).contains(valorLido));
+            } while (!Arrays.asList(idsClientes).contains(valorLido) || !valido);
 
             boolean editar = false;
             int index = 0;
@@ -505,7 +568,7 @@ public class RestaurantManagement {
                 String nome = input.nextLine();
 
                 System.out.print("Indique o novo nif do cliente: ");
-                String nif = input.nextLine();
+                int nif = Integer.parseInt(input.nextLine());
 
                 pessoaStorage.set(index, new Pessoa(valorLido, nome, nif, TipoPessoa.Cliente));
                 System.out.println("Cliente com id " + valorLido + " editado.");
@@ -516,11 +579,12 @@ public class RestaurantManagement {
         }
     }
 
-    //Remover cliente do sistema
+//Remover cliente do sistema
     private static void removerCliente() {
         int contadorClientes = 0;
-        int valorLido = 0;
+        int valorLido = -1;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos clientes existem no sistema
         for (Pessoa cliente : pessoaStorage) {
@@ -545,15 +609,21 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do cliente que quer remover: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                        System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (!Arrays.asList(idsClientes).contains(valorLido)) {
-                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while (!Arrays.asList(idsClientes).contains(valorLido));
+            } while ((!Arrays.asList(idsClientes).contains(valorLido)) || !valido);
 
             boolean remover = false;
             int index = 0;
@@ -580,7 +650,7 @@ public class RestaurantManagement {
     private static void listarFuncionarios() {
         boolean existe = false;
         for (Pessoa funcionario : pessoaStorage) {
-            if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionario) && (!funcionario.getTipoPessoa().equals(TipoPessoa.Cliente))) {
+            if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionario)) {
                 System.out.println(funcionario.getAllInfo());
                 existe = true;
             }
@@ -600,7 +670,7 @@ public class RestaurantManagement {
         String nome = input.nextLine();
 
         System.out.print("Indique o número de contribuinte do funcionário: ");
-        String nif = input.nextLine();
+        int nif = Integer.parseInt(input.nextLine());
 
         //Verificar se o username ainda nao existe no sistema
         String username = "";
@@ -645,6 +715,7 @@ public class RestaurantManagement {
         int contadorFuncionarios = 0;
         int valorLido = 0;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos funcionarios existem no sistema
         for (Pessoa funcionario : pessoaStorage) {
@@ -668,18 +739,21 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do funcionário que quer editar: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                        System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (valorLido == 1) {
-                    System.out.println("Não é possivel remover administrador geral.");
-                }
-                if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
-                    System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while ((!Arrays.asList(idsFuncionario).contains(valorLido)) || (valorLido == 1));
+            } while ((!Arrays.asList(idsFuncionario).contains(valorLido)) || !valido);
 
             boolean editar = false;
             int index = 0;
@@ -696,7 +770,7 @@ public class RestaurantManagement {
                 String nome = input.nextLine();
 
                 System.out.print("Indique o novo nif do funcionário: ");
-                String nif = input.nextLine();
+                int nif = Integer.parseInt(input.nextLine());
 
                 //Verificar se o username ainda nao existe no sistema
                 String username = "";
@@ -748,6 +822,7 @@ public class RestaurantManagement {
         int contadorFuncionarios = 0;
         int valorLido = 0;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos funcionarios existem no sistema
         for (Pessoa funcionario : pessoaStorage) {
@@ -771,18 +846,25 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do funcionário que quer remover: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (valorLido == 1) {
+                        System.out.println("Não é possivel remover administrador geral.");
+                        valido = false;
+                    }
+                    if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                        System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (valorLido == 1) {
-                    System.out.println("Não é possivel remover administrador geral.");
-                }
-                if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
-                    System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while ((!Arrays.asList(idsFuncionario).contains(valorLido)) || (valorLido == 1));
+            } while ((!Arrays.asList(idsFuncionario).contains(valorLido)) || !valido);
 
             boolean remover = false;
             int index = 0;
@@ -821,6 +903,7 @@ public class RestaurantManagement {
     //Criar novo produto
     private static void criarProduto() {
         int codigo = 1;
+        boolean valido = false;
 
         //Verifica se existem produtos no sistema, para poder ser associado
         //um codigo ao novo artigo. Este codigo é unico e sequencial
@@ -839,12 +922,18 @@ public class RestaurantManagement {
             System.out.println("2. Bebida");
             System.out.println("3. Sobremesa");
             System.out.print("Indique o tipo de produto: ");
-            escolha = Integer.parseInt(input.nextLine());
-        } while (escolha < 1 || escolha > 3);
+            if (input.hasNextInt()) {
+                escolha = Integer.parseInt(input.nextLine());
+                valido = true;
+            } else {
+                input.nextLine();
+                valido = false;
+            }
+        } while (escolha < 1 || escolha > 3 || !valido);
 
         switch (escolha) {
             case 1:
-                tipo = TipoProduto.Refeiçao;
+                tipo = TipoProduto.Refeicao;
                 break;
             case 2:
                 tipo = TipoProduto.Bebida;
@@ -855,12 +944,9 @@ public class RestaurantManagement {
         }
 
         System.out.print("Indique o preço do produto: ");
-        double preço = Double.parseDouble(input.nextLine());
+        double preco = Double.parseDouble(input.nextLine());
 
-        System.out.print("Indique o stock do produto: ");
-        int stock = Integer.parseInt(input.nextLine());
-
-        produtoStorage.add(new Produto(codigo, nome, tipo, preço, stock));
+        produtoStorage.add(new Produto(codigo, nome, tipo, preco));
         reloadFiles();
     }
 
@@ -869,6 +955,7 @@ public class RestaurantManagement {
         int contadorProdutos = 0;
         int valorLido = 0;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos produtos existem no sistema
         for (Produto produto : produtoStorage) {
@@ -888,15 +975,21 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do produto que quer editar: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsProdutos).contains(valorLido) || !valido) {
+                        System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (!Arrays.asList(idsProdutos).contains(valorLido)) {
-                    System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while (!Arrays.asList(idsProdutos).contains(valorLido));
+            } while (!Arrays.asList(idsProdutos).contains(valorLido) || !valido);
 
             boolean editar = false;
             int index = 0;
@@ -920,12 +1013,18 @@ public class RestaurantManagement {
                     System.out.println("2. Bebida");
                     System.out.println("3. Sobremesa");
                     System.out.print("Indique o tipo de produto: ");
-                    escolha = Integer.parseInt(input.nextLine());
-                } while (escolha < 1 || escolha > 3);
+                    if (input.hasNextInt()) {
+                        escolha = Integer.parseInt(input.nextLine());
+                        valido = true;
+                    } else {
+                        input.nextLine();
+                        valido = false;
+                    }
+                } while (escolha < 1 || escolha > 3 || !valido);
 
                 switch (escolha) {
                     case 1:
-                        tipo = TipoProduto.Refeiçao;
+                        tipo = TipoProduto.Refeicao;
                         break;
                     case 2:
                         tipo = TipoProduto.Bebida;
@@ -936,12 +1035,9 @@ public class RestaurantManagement {
                 }
 
                 System.out.print("Indique o novo preço do produto: ");
-                double preço = Double.parseDouble(input.nextLine());
+                double preco = Double.parseDouble(input.nextLine());
 
-                System.out.print("Indique o novo stock do produto: ");
-                int stock = Integer.parseInt(input.nextLine());
-
-                produtoStorage.set(index, new Produto(valorLido, nome, tipo, preço, stock));
+                produtoStorage.set(index, new Produto(valorLido, nome, tipo, preco));
                 System.out.println("Produto com id " + valorLido + " editado.");
                 reloadFiles();
             }
@@ -955,6 +1051,7 @@ public class RestaurantManagement {
         int contadorProdutos = 0;
         int valorLido = 0;
         int contador = 0;
+        boolean valido = false;
 
         //"Conta" quantos produtos existem no sistema
         for (Produto produto : produtoStorage) {
@@ -974,15 +1071,23 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do produto que quer remover: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                System.out.print("Escolha uma opção: ");
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsProdutos).contains(valorLido)) {
+                        System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-                if (!Arrays.asList(idsProdutos).contains(valorLido)) {
-                    System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while (!Arrays.asList(idsProdutos).contains(valorLido));
+
+            } while (!Arrays.asList(idsProdutos).contains(valorLido) || !valido);
 
             boolean remover = false;
             int index = 0;
@@ -1011,6 +1116,7 @@ public class RestaurantManagement {
         int quantidadeClientes = 0;
         int valorLido = 0;
         int contadorClientes = 0;
+        boolean valido = false;
 
         //"Conta" quantos clientes existem no sistema
         for (Pessoa cliente : pessoaStorage) {
@@ -1033,14 +1139,21 @@ public class RestaurantManagement {
             do {
                 System.out.println("Caso queira voltar, prima 0");
                 System.out.print("Indique o id do cliente que consumiu: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
-                } else if (!Arrays.asList(idsClientes).contains(valorLido)) {
-                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                        System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-            } while (!Arrays.asList(idsClientes).contains(valorLido));
+            } while (!Arrays.asList(idsClientes).contains(valorLido) || !valido);
 
             for (Compra vendas : compraStorage) {
                 if (vendas.getCliente().getCodigo() == valorLido) {
@@ -1063,6 +1176,7 @@ public class RestaurantManagement {
         int quantidadeFuncionarios = 0;
         int contadorFuncionarios = 0;
         int valorLido = 0;
+        boolean valido = false;
         //------------------------------------------------------------//
         //"Conta" quantos funcionarios existem no sistema
         for (Pessoa funcionario : pessoaStorage) {
@@ -1084,15 +1198,23 @@ public class RestaurantManagement {
             System.out.println("-------------------------------");
 
             do {
-                System.out.print("Indique o id do funcionário que vendeu: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
-                } else if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
-                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                System.out.println("Caso queira voltar, prima 0");
+                System.out.print("Indique o id do cliente que consumiu: ");
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    valido = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                        System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    valido = false;
                 }
-            } while (!Arrays.asList(idsFuncionario).contains(valorLido));
+            } while (!Arrays.asList(idsFuncionario).contains(valorLido) || !valido);
 
             for (Compra vendas : compraStorage) {
                 if (vendas.getFuncionario().getCodigo() == valorLido) {
@@ -1143,6 +1265,7 @@ public class RestaurantManagement {
         int quantidadeClientes = 0;
         int valorLido = 0;
         int contadorClientes = 0;
+        boolean validoCliente = false;
         //------------------------------------------------------------//
         //"Conta" quantos clientes existem no sistema
         for (Pessoa cliente : pessoaStorage) {
@@ -1156,7 +1279,7 @@ public class RestaurantManagement {
             Integer[] idsClientes = new Integer[quantidadeClientes];
             for (Pessoa cliente : pessoaStorage) {
                 if (cliente.getTipoPessoa().equals(TipoPessoa.Cliente)) {
-                    System.out.println(cliente.getAllInfo());
+                    System.out.println(cliente.getInfoReduzida());
                     idsClientes[contadorClientes] = cliente.getCodigo();
                     contadorClientes++;
                 }
@@ -1165,20 +1288,24 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do cliente que consumiu: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
-                }
-                if (!Arrays.asList(idsClientes).contains(valorLido)) {
-                    System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    validoCliente = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsClientes).contains(valorLido)) {
+                        System.out.println("Cliente com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    validoCliente = false;
                 }
             } while (!Arrays.asList(idsClientes).contains(valorLido));
 
-            int index = 0;
             for (Pessoa cliente : pessoaStorage) {
-                index = pessoaStorage.indexOf(cliente);
-                if ((cliente.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
+                if ((cliente.getCodigo() == valorLido)) {
                     clienteComprou = cliente;
                     break;
                 }
@@ -1191,6 +1318,7 @@ public class RestaurantManagement {
         Pessoa funcionarioVendeu = null;
         int quantidadeFuncionarios = 0;
         int contadorFuncionarios = 0;
+        boolean validoFuncionario = false;
         valorLido = 0;
         //------------------------------------------------------------//
         //"Conta" quantos funcionarios existem no sistema
@@ -1205,7 +1333,7 @@ public class RestaurantManagement {
             Integer[] idsFuncionario = new Integer[quantidadeFuncionarios];
             for (Pessoa funcionario : pessoaStorage) {
                 if (funcionario.getTipoPessoa().equals(TipoPessoa.Funcionario)) {
-                    System.out.println(funcionario.getAllInfo());
+                    System.out.println(funcionario.getInfoReduzida());
                     idsFuncionario[contadorFuncionarios] = funcionario.getCodigo();
                     contadorFuncionarios++;
                 }
@@ -1215,20 +1343,25 @@ public class RestaurantManagement {
             do {
                 System.out.println("Prima 0 se quiser voltar atrás");
                 System.out.print("Indique o id do funcionário que vendeu: ");
-                valorLido = Integer.parseInt(input.nextLine());
-                if (valorLido == 0) {
-                    voltarMenuLogged();
-                    break;
+                if (input.hasNextInt()) {
+                    valorLido = Integer.parseInt(input.nextLine());
+                    validoFuncionario = true;
+                    if (valorLido == 0) {
+                        voltarMenuLogged();
+                        break;
+                    }
+                    if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
+                        System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
+                    }
+                } else {
+                    input.nextLine();
+                    validoFuncionario = false;
                 }
-                if (!Arrays.asList(idsFuncionario).contains(valorLido)) {
-                    System.out.println("Funcionário com o id " + valorLido + " não existe. Tente novamente.");
-                }
-            } while (!Arrays.asList(idsFuncionario).contains(valorLido));
 
-            int index = 0;
+            } while (!Arrays.asList(idsFuncionario).contains(valorLido) || !validoFuncionario);
+
             for (Pessoa funcionario : pessoaStorage) {
-                index = pessoaStorage.indexOf(funcionario);
-                if ((funcionario.getCodigo() == valorLido) && (index >= 0) && (index < pessoaStorage.size())) {
+                if ((funcionario.getCodigo() == valorLido)) {
                     funcionarioVendeu = funcionario;
                     break;
                 }
@@ -1239,7 +1372,9 @@ public class RestaurantManagement {
         }
 
         int contadorProdutos = 0;
-        double preçoTotal = 0;
+        double precoTotal = 0;
+        boolean validoProduto = false;
+        boolean validoQuantidade = false;
         ArrayList<Produto> produtosCompra = new ArrayList<Produto>();
 
         //------------------------------------------------------------//
@@ -1254,13 +1389,19 @@ public class RestaurantManagement {
             System.out.println("-------------------------------");
             do {
                 do {
-                    System.out.println("Prima 0 se quiser voltar atrás");
+                    System.out.println("Prima 0 se quiser finalizar a venda");
                     System.out.print("Indique o id do produto que foi consumido: ");
-                    valorLido = Integer.parseInt(input.nextLine());
-                    if (valorLido == 0) {
-                        break;
-                    } else if (!Arrays.asList(idsProduto).contains(valorLido)) {
-                        System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                    if (input.hasNextInt()) {
+                        valorLido = Integer.parseInt(input.nextLine());
+                        validoProduto = true;
+                        if (valorLido == 0) {
+                            break;
+                        } else if (!Arrays.asList(idsProduto).contains(valorLido)) {
+                            System.out.println("Produto com o id " + valorLido + " não existe. Tente novamente.");
+                        }
+                    } else {
+                        input.nextLine();
+                        validoProduto = false;
                     }
                 } while (!Arrays.asList(idsProduto).contains(valorLido));
 
@@ -1268,13 +1409,19 @@ public class RestaurantManagement {
                     int quantidadeComprada = 0;
                     do {
                         System.out.print("Indique a quantidade que foi consumida: ");
-                        quantidadeComprada = Integer.parseInt(input.nextLine());
-                    } while (quantidadeComprada < 1);
+                        if (input.hasNextInt()) {
+                            quantidadeComprada = Integer.parseInt(input.nextLine());
+                            validoQuantidade = true;
+                        } else {
+                            input.nextLine();
+                            validoQuantidade = false;
+                        }
+                    } while (quantidadeComprada < 1 || !validoQuantidade);
 
                     for (int contadorQuantidade = 0; contadorQuantidade < quantidadeComprada; contadorQuantidade++) {
                         for (Produto produto : produtoStorage) {
                             if ((produto.getCodigo() == valorLido)) {
-                                preçoTotal += produto.getPreço();
+                                precoTotal += produto.getPreco();
                                 produtosCompra.add(produto);
                                 break;
                             }
@@ -1282,7 +1429,7 @@ public class RestaurantManagement {
                     }
                 }
             } while (valorLido != 0);
-            compraStorage.add(new Compra(LocalDateTime.now(), funcionarioVendeu, clienteComprou, preçoTotal, produtosCompra));
+            compraStorage.add(new Compra(LocalDateTime.now(), funcionarioVendeu, clienteComprou, precoTotal, produtosCompra));
             System.out.println("Compra adicionada com sucesso!");
             reloadFiles();
         } else {

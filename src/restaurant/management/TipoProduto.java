@@ -10,7 +10,7 @@ package restaurant.management;
  * @author Dinis Pimpão e Gonçalo Gouveia
  */
 public enum TipoProduto {
-    Refeiçao,
+    Refeicao,
     Bebida,
     Sobremesa;
 }

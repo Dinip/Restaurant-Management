@@ -17,14 +17,14 @@ public class Compra {
     private LocalDateTime data;
     private Pessoa funcionario;
     private Pessoa cliente;
-    private double preçoFinal;
+    private double precoFinal;
     private ArrayList<Produto> produtos;
 
-    public Compra(LocalDateTime data, Pessoa funcionario, Pessoa cliente, double preçoFinal, ArrayList<Produto> produtos) {
+    public Compra(LocalDateTime data, Pessoa funcionario, Pessoa cliente, double precoFinal, ArrayList<Produto> produtos) {
         this.data = data;
         this.funcionario = funcionario;
         this.cliente = cliente;
-        this.preçoFinal = preçoFinal;
+        this.precoFinal = precoFinal;
         this.produtos = produtos;
     }
 
@@ -52,12 +52,12 @@ public class Compra {
         this.cliente = cliente;
     }
 
-    public double getPreçoFinal() {
-        return preçoFinal;
+    public double getPrecoFinal() {
+        return precoFinal;
     }
 
-    public void setPreçoFinal(double preçoFinal) {
-        this.preçoFinal = preçoFinal;
+    public void setPrecoFinal(double precoFinal) {
+        this.precoFinal = precoFinal;
     }
 
     public ArrayList<Produto> getProdutos() {
@@ -74,7 +74,7 @@ public class Compra {
                 + "Vendido por: " + this.funcionario.getNome() + "\n"
                 + "Cliente: " + this.cliente.getNome() + "\n"
                 + "Nif: " + this.cliente.getContribuinte() + "\n"
-                + "Preço Final: " + String.format("%.2f", this.preçoFinal) + "€\n"
+                + "Preço Final: " + String.format("%.2f", this.precoFinal) + "€\n"
                 + "Produtos:";                
     }
 }
